@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Activators\**" />
+    <Compile Remove="DataShuffler\**" />
+    <Compile Remove="EvaluationFunctions\**" />
+    <Compile Remove="GradientAdjustments\**" />
+    <Compile Remove="Layers\**" />
+    <Compile Remove="LossFunctions\**" />
+    <Compile Remove="NetworkBuilders\**" />
+    <Compile Remove="NetworkHandlers\**" />
+    <Compile Remove="Storage\**" />
+    <Compile Remove="Utils\**" />
+    <EmbeddedResource Remove="Activators\**" />
+    <EmbeddedResource Remove="DataShuffler\**" />
+    <EmbeddedResource Remove="EvaluationFunctions\**" />
+    <EmbeddedResource Remove="GradientAdjustments\**" />
+    <EmbeddedResource Remove="Layers\**" />
+    <EmbeddedResource Remove="LossFunctions\**" />
+    <EmbeddedResource Remove="NetworkBuilders\**" />
+    <EmbeddedResource Remove="NetworkHandlers\**" />
+    <EmbeddedResource Remove="Serialization\**" />
+    <EmbeddedResource Remove="Storage\**" />
+    <EmbeddedResource Remove="Utils\**" />
+    <None Remove="Activators\**" />
+    <None Remove="DataShuffler\**" />
+    <None Remove="EvaluationFunctions\**" />
+    <None Remove="GradientAdjustments\**" />
+    <None Remove="Layers\**" />
+    <None Remove="LossFunctions\**" />
+    <None Remove="NetworkBuilders\**" />
+    <None Remove="NetworkHandlers\**" />
+    <None Remove="Serialization\**" />
+    <None Remove="Storage\**" />
+    <None Remove="Utils\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="AssemblyInternals.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MathNet.Numerics" Version="4.9.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NeuralNetwork.Common\NeuralNetwork.Common.csproj" />
+  </ItemGroup>
+
+</Project>
