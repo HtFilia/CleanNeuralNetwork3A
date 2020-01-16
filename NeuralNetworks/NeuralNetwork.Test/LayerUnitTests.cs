@@ -25,7 +25,7 @@ namespace NeuralNetwork.Tests
             testLayer.Propagate(testInput);
 
             // If all is well the new activation is not zero anymore
-            Assert.NotZero(testLayer.Activation[0, 0]);
+            Assert.AreNotEqual(0d, testLayer.Activation[0, 0]);
         }
     }
 }
