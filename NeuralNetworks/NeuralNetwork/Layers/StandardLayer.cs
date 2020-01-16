@@ -22,9 +22,9 @@ namespace NeuralNetwork.Layers
             _inputSize = inputSize;
             _batchSize = batchSize;
 
-            _weights = Matrix<double>.Build.Random(_inputSize, _layerSize);
-            _bias = Matrix<double>.Build.Random(_inputSize, _layerSize);
-            _output = Matrix<double>.Build.Random(_batchSize, _inputSize);
+            _weights = Matrix<double>.Build.Random(_layerSize, _inputSize);
+            _bias = Matrix<double>.Build.Random(_layerSize, 1);
+            _output = Matrix<double>.Build.Random(_batchSize, _layerSize);
 
             _activator = activator;
         }
@@ -85,11 +85,10 @@ namespace NeuralNetwork.Layers
         public void Propagate(Matrix<double> input)
         {
             _inputSize = input.ColumnCount;
-            Matrix<double> zeta = Matrix<double>.Build.Random(_batchSize, _inputSize);
+            Matrix<double> zeta = Matrix<double>.Build.Random(_batchSize, _layerSize);
             for (int i = 0; i < _batchSize; i++)
             {
-                //TODO
-                //zeta.Row = ((_weights.Row(i).Transpose()).Multiply(input.Row(i))).add(_bias.Row(i));
+                zeta.Row(i) = ((_weights.Transpose()).Multiply(input.Row(i))).add(_bias.Column(0));
                 for (int j = 0; j < _inputSize; j++)
                 {
                     _output[i, j] = _activator.Apply(zeta[i, j]);
