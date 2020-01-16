@@ -88,7 +88,8 @@ namespace NeuralNetwork.Layers
             Matrix<double> zeta = Matrix<double>.Build.Random(_batchSize, _inputSize);
             for (int i = 0; i < _batchSize; i++)
             {
-                zeta.Row(i) = ((weights.Row(i).Transpose()).Multiply(input.Row(i))).add(bias.Row(i));
+                //TODO
+                //zeta.Row = ((_weights.Row(i).Transpose()).Multiply(input.Row(i))).add(_bias.Row(i));
                 for (int j = 0; j < _inputSize; j++)
                 {
                     _output[i, j] = _activator.Apply(zeta[i, j]);

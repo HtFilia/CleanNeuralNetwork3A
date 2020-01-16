@@ -5,13 +5,13 @@ using NeuralNetwork.Common.Activators;
 
 namespace NeuralNetwork.Activators
 {
-    class ActivatorIdentity : IActivator
+    public sealed class ActivatorIdentity : IActivator
     {
-        protected internal ActivatorType activatorType;
+        public ActivatorType activatorType;
 
-        public ActivatorIdentity(ActivatorType type)
+        public ActivatorIdentity()
         {
-            activatorType = type;
+            activatorType = Common.Activators.ActivatorType.Identity;
         }
 
         public ActivatorType Type
