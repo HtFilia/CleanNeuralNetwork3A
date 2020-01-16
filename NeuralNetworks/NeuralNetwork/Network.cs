@@ -68,7 +68,10 @@ namespace NeuralNetwork
 
         public void Learn(Matrix<double> outputLayerError)
         {
-            throw new NotImplementedException();
+            // First back-propagation through argument outputLayerError
+            // TODO
+            // We back-propagate to the previous layers.
+            // TODO
         }
 
         public void Propagate(Matrix<double> input)
