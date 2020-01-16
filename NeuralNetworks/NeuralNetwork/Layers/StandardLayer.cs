@@ -13,7 +13,9 @@ namespace NeuralNetwork.Layers
         private int _batchSize;
         private Matrix<double> _weights;
         private Matrix<double> _bias;
+        private Matrix<double> _zeta;
         private Matrix<double> _output;
+        Matrix<double> _weightedError;
         private IActivator _activator;
 
         public StandardLayer(int layerSize, int inputSize, int batchSize, IActivator activator)
@@ -25,6 +27,8 @@ namespace NeuralNetwork.Layers
             _weights = Matrix<double>.Build.Random(_layerSize, _inputSize);
             _bias = Matrix<double>.Build.Random(_layerSize, 1);
             _output = Matrix<double>.Build.Dense(_batchSize, _layerSize);
+            _zeta = Matrix<double>.Build.Dense(_batchSize, _layerSize);
+            _weightedError = Matrix<double>.Build.Dense(_batchSize, _layerSize);
 
             _activator = activator;
         }
@@ -116,13 +120,12 @@ namespace NeuralNetwork.Layers
         public void Propagate(Matrix<double> input)
         {
             _inputSize = input.ColumnCount;
-            Matrix<double> zeta = Matrix<double>.Build.Random(_batchSize, _layerSize);
             for (int i = 0; i < _batchSize; i++)
             {
-                zeta.SetRow(i, (_weights.Transpose().Multiply(input.Row(i))).Add(_bias.Column(0)));
+                _zeta.SetRow(i, (_weights.Transpose().Multiply(input.Row(i))).Add(_bias.Column(0)));
                 for (int j = 0; j < _layerSize; j++)
                 {
-                    _output[i, j] = _activator.Apply(zeta[i, j]);
+                    _output[i, j] = _activator.Apply(_zeta[i, j]);
                 }
             }
         }
@@ -133,7 +136,15 @@ namespace NeuralNetwork.Layers
         /// <param name="upstreamWeightedErrors">The upstream weighted errors.</param>
         public void BackPropagate(Matrix<double> upstreamWeightedErrors)
         {
-            throw new NotImplementedException();
+            Matrix<double> zetaDeriv = Matrix<double>.Build.Dense(_batchSize, _layerSize);
+            for (int i = 0; i < _batchSize; i++)
+            {
+                for(int j = 0; j < _layerSize; j++)
+                {
+                    zetaDeriv[i, j] = _activator.ApplyDerivative(_zeta[i, j]);
+                }
+            }
+            upstreamWeightedErrors.PointwiseMultiply(zetaDeriv, _weightedError);
         }
 
         /// <summary>Creation
