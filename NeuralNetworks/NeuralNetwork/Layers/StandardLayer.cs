@@ -24,7 +24,38 @@ namespace NeuralNetwork.Layers
 
             _weights = Matrix<double>.Build.Random(_layerSize, _inputSize);
             _bias = Matrix<double>.Build.Random(_layerSize, 1);
-            _output = Matrix<double>.Build.Random(_batchSize, _layerSize);
+            _output = Matrix<double>.Build.Dense(_batchSize, _layerSize);
+
+            _activator = activator;
+        }
+
+#pragma warning disable CS0628 // New protected member declared in sealed class
+        protected internal StandardLayer(int layerSize, int inputSize, int batchSize, IActivator activator, Matrix<double> weights, Matrix<double> bias)
+#pragma warning restore CS0628 // New protected member declared in sealed class
+        {
+            if (weights.RowCount != layerSize)
+            {
+                throw new ArgumentException(String.Format("Weights' Rows should be {0}.", layerSize));
+            }
+            if (weights.ColumnCount != inputSize)
+            {
+                throw new ArgumentException(String.Format("Weights' Columns should be {0}.", inputSize));
+            }
+            if (bias.RowCount != layerSize)
+            {
+                throw new ArgumentException(String.Format("Bias' Rows should be {0}.", layerSize));
+            }
+            if (bias.ColumnCount != 1)
+            {
+                throw new ArgumentException("Bias's Columns should be 1.");
+            }
+            _layerSize = layerSize;
+            _inputSize = inputSize;
+            _batchSize = batchSize;
+
+            _weights = weights;
+            _bias = bias;
+            _output = Matrix<double>.Build.Dense(_batchSize, _layerSize);
 
             _activator = activator;
         }

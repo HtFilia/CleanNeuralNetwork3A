@@ -73,7 +73,14 @@ namespace NeuralNetwork
 
         public void Propagate(Matrix<double> input)
         {
-            throw new NotImplementedException();
+            // First propagation through argument input
+            _layers[0].Propagate(input);
+            // We propagate to the next layers. The previous Activation becomes the next input
+            for (int layer = 1; layer < _layers.Length; layer++)
+            {
+                Matrix<double> newInput = _layers[layer - 1].Activation;
+                _layers[layer].Propagate(newInput);
+            }
         }
     }
 }
