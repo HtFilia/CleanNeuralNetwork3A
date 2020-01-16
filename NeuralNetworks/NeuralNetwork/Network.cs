@@ -3,6 +3,7 @@ using NeuralNetwork.Common;
 using NeuralNetwork.Common.Activators;
 using NeuralNetwork.Common.Layers;
 using System;
+using NeuralNetwork.Layers;
 
 namespace NeuralNetwork
 {
@@ -25,24 +26,25 @@ namespace NeuralNetwork
         public Mode Mode { get => _mode; set => _mode = value; }
 
         // Constructor
-        public Network(int batchSize, int nbHiddenLayers, int[] nbNeuronsPerLayer, IActivator activator)
+        public Network(int batchSize, int inputSize, int nbHiddenLayers, int[] nbNeuronsPerLayer, IActivator activator)
         {
             // Argument Exception
-            if (nbNeuronsPerLayer.Length != nbHiddenLayers + 2)
+            if (nbNeuronsPerLayer.Length != nbHiddenLayers)
             {
                 throw new Exception("There should be a set number of neurons per layer " +
                     "for each layer.");
             }
             // Parameters
             this._batchSize = batchSize;
-            this._output = Matrix<double>.Build.Random(batchSize, nbNeuronsPerLayer[nbNeuronsPerLayer.Length - 1]);
+            this._output = Matrix<double>.Build.Dense(batchSize, nbNeuronsPerLayer[nbNeuronsPerLayer.Length - 1]);
             this._layers = new ILayer[nbHiddenLayers + 3];
-            // TODO: Add input and hidden layer with respective size and activator
-            for (int layer = 0; layer <= nbHiddenLayers; layer++)
+            // First hidden layer is connected to user's input
+            this._layers[0] = new StandardLayer(nbNeuronsPerLayer[0], inputSize, batchSize, activator);
+            // Next hidden layers have an input size of previous layer's size
+            for (int layer = 1; layer < nbHiddenLayers; layer++)
             {
-                //this._layers[layer] = new StandardLayer(nbNeuronsPerLayer[layer], activator);
+                this._layers[layer] = new StandardLayer(nbNeuronsPerLayer[layer], nbNeuronsPerLayer[layer - 1], batchSize, activator);
             }
-            //this._layers[nbHiddenLayers + 2] = new StandardLayer(nbNeuronsPerLayer[nbHiddenLayers + 2], IdentityActivator);
             // We have to train a network first after creating it
             this._mode = Mode.Training;
         }
@@ -84,6 +86,8 @@ namespace NeuralNetwork
                 Matrix<double> newInput = _layers[layer - 1].Activation;
                 _layers[layer].Propagate(newInput);
             }
+            // Final layer's activation is network's output
+            _output = _layers[Layers.Length - 1].Activation;
         }
     }
 }

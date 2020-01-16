@@ -29,9 +29,7 @@ namespace NeuralNetwork.Layers
             _activator = activator;
         }
 
-#pragma warning disable CS0628 // New protected member declared in sealed class
-        protected internal StandardLayer(int layerSize, int inputSize, int batchSize, IActivator activator, Matrix<double> weights, Matrix<double> bias)
-#pragma warning restore CS0628 // New protected member declared in sealed class
+        internal StandardLayer(int layerSize, int inputSize, int batchSize, IActivator activator, Matrix<double> weights, Matrix<double> bias)
         {
             if (weights.RowCount != layerSize)
             {
