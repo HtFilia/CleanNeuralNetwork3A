@@ -1,4 +1,5 @@
-﻿using MathNet.Numerics.LinearAlgebra;
+﻿using System.Linq;
+using MathNet.Numerics.LinearAlgebra;
 using NeuralNetwork.Common;
 using NeuralNetwork.Common.Activators;
 using NeuralNetwork.Common.Layers;
@@ -10,10 +11,10 @@ namespace NeuralNetwork
     public sealed class Network : IEquatable<Network>, INetwork
     {
         // Fields
-        public int _batchSize;
-        public Matrix<double> _output;
-        public ILayer[] _layers;
-        public Mode _mode;
+        private int _batchSize;
+        private Matrix<double> _output;
+        private ILayer[] _layers;
+        private Mode _mode;
 
 
         // Getters / Setters
@@ -29,7 +30,7 @@ namespace NeuralNetwork
         public Network(int batchSize, int inputSize, int nbHiddenLayers, int[] nbNeuronsPerLayer, IActivator activator)
         {
             // Argument Exception
-            if (nbNeuronsPerLayer.Length != nbHiddenLayers)
+            if (nbNeuronsPerLayer.Length != nbHiddenLayers + 2)
             {
                 throw new Exception("There should be a set number of neurons per layer " +
                     "for each layer.");
@@ -37,14 +38,18 @@ namespace NeuralNetwork
             // Parameters
             this._batchSize = batchSize;
             this._output = Matrix<double>.Build.Dense(batchSize, nbNeuronsPerLayer[nbNeuronsPerLayer.Length - 1]);
-            this._layers = new ILayer[nbHiddenLayers + 3];
-            // First hidden layer is connected to user's input
+            this._layers = new ILayer[nbHiddenLayers + 2];
+            // First layer is connected to user's input
             this._layers[0] = new StandardLayer(nbNeuronsPerLayer[0], inputSize, batchSize, activator);
             // Next hidden layers have an input size of previous layer's size
-            for (int layer = 1; layer < nbHiddenLayers; layer++)
+            for (int layer = 1; layer <= nbHiddenLayers; layer++)
             {
                 this._layers[layer] = new StandardLayer(nbNeuronsPerLayer[layer], nbNeuronsPerLayer[layer - 1], batchSize, activator);
             }
+            // Output layer has an identity activator
+            this._layers[nbHiddenLayers + 1] = new StandardLayer(nbNeuronsPerLayer[nbNeuronsPerLayer.Length - 1],
+                                                                 nbNeuronsPerLayer[nbNeuronsPerLayer.Length - 2],
+                                                                 batchSize, new Activators.ActivatorIdentity());
             // We have to train a network first after creating it
             this._mode = Mode.Training;
         }
@@ -74,7 +79,15 @@ namespace NeuralNetwork
             // TODO
             // We back-propagate to the previous layers.
             // TODO
+            var weightedError = outputLayerError;
+            for (int i = Layers.Length - 1; i > -1; i--)
+            {
+                Layers[i].BackPropagate(weightedError);
+                Layers[i].UpdateParameters();
+                weightedError = Layers[i].WeightedError;
+            }
         }
+
 
         public void Propagate(Matrix<double> input)
         {
