@@ -74,7 +74,15 @@ namespace NeuralNetwork
             // TODO
             // We back-propagate to the previous layers.
             // TODO
+            var weightedError = outputLayerError;
+            for (int i = Layers.Length - 1; i > -1; i--)
+            {
+                Layers[i].BackPropagate(weightedError);
+                Layers[i].UpdateParameters();
+                weightedError = Layers[i].WeightedError;
+            }
         }
+
 
         public void Propagate(Matrix<double> input)
         {

@@ -2,6 +2,7 @@
 using NeuralNetwork.Common;
 using NeuralNetwork.Common.Activators;
 using NeuralNetwork.Common.Layers;
+using NeuralNetwork.Common.GradientAdjustmentsParameters;
 using System;
 
 namespace NeuralNetwork.Layers
@@ -11,12 +12,14 @@ namespace NeuralNetwork.Layers
         private int _layerSize;
         private int _inputSize;
         private int _batchSize;
+        private Matrix<double> _input;
         private Matrix<double> _weights;
         private Matrix<double> _bias;
         private Matrix<double> _zeta;
         private Matrix<double> _output;
         Matrix<double> _weightedError;
         private IActivator _activator;
+        private FixedLearningRateParameters _fixedLearningRate;
 
         public StandardLayer(int layerSize, int inputSize, int batchSize, IActivator activator)
         {
@@ -26,11 +29,13 @@ namespace NeuralNetwork.Layers
 
             _weights = Matrix<double>.Build.Random(_layerSize, _inputSize);
             _bias = Matrix<double>.Build.Random(_layerSize, 1);
-            _output = Matrix<double>.Build.Dense(_batchSize, _layerSize);
-            _zeta = Matrix<double>.Build.Dense(_batchSize, _layerSize);
-            _weightedError = Matrix<double>.Build.Dense(_batchSize, _layerSize);
+            _output = Matrix<double>.Build.Dense(_layerSize, _batchSize);
+            _zeta = Matrix<double>.Build.Dense(_layerSize, _batchSize);
+            _weightedError = Matrix<double>.Build.Dense(_layerSize, _batchSize);
+            _input = Matrix<double>.Build.Dense(_inputSize, _batchSize);
+            _fixedLearningRate = new FixedLearningRateParameters(0.2);
 
-            _activator = activator;
+                _activator = activator;
         }
 
         internal StandardLayer(int layerSize, int inputSize, int batchSize, IActivator activator, Matrix<double> weights, Matrix<double> bias)
@@ -91,6 +96,20 @@ namespace NeuralNetwork.Layers
         }
 
         /// <summary>
+        /// Gets the gradient adjustment.
+        /// </summary>
+        /// <value>
+        /// The gradient adjustment.
+        /// </value>
+        public IGradientAdjustmentParameters FixedLearningRate
+        {
+            get
+            {
+                return _fixedLearningRate;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the batch size.
         /// </summary>
         /// <value>
@@ -120,10 +139,10 @@ namespace NeuralNetwork.Layers
             _inputSize = input.ColumnCount;
             for (int i = 0; i < _batchSize; i++)
             {
-                _zeta.SetRow(i, (_weights.Transpose().Multiply(input.Row(i))).Add(_bias.Column(0)));
+                _zeta.SetColumn(i, (_weights.Transpose().Multiply(input.Column(i))).Add(_bias.Column(0)));
                 for (int j = 0; j < _layerSize; j++)
                 {
-                    _output[i, j] = _activator.Apply(_zeta[i, j]);
+                    _output[j, i] = _activator.Apply(_zeta[j, i]);
                 }
             }
         }
@@ -139,7 +158,7 @@ namespace NeuralNetwork.Layers
             {
                 for(int j = 0; j < _layerSize; j++)
                 {
-                    zetaDeriv[i, j] = _activator.ApplyDerivative(_zeta[i, j]);
+                    zetaDeriv[j, i] = _activator.ApplyDerivative(_zeta[j, i]);
                 }
             }
             upstreamWeightedErrors.PointwiseMultiply(zetaDeriv, _weightedError);
@@ -150,7 +169,11 @@ namespace NeuralNetwork.Layers
         /// </summary>
         public void UpdateParameters()
         {
-            throw new NotImplementedException();
+            var gradientWeights = (_input * _weightedError.Transpose());
+            var gradientBiais = _weightedError * Matrix<double>.Build.Dense(_batchSize, 1, 1);
+      
+            _weights = _weights - gradientWeights.Multiply(_fixedLearningRate.LearningRate / BatchSize) ;
+            _bias = _bias - gradientWeights.Multiply(_fixedLearningRate.LearningRate / BatchSize); ;
         }
 
         /// <summary>
