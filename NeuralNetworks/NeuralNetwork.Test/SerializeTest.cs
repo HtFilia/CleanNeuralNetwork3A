@@ -18,7 +18,7 @@ namespace NeuralNetwork.Tests
         [Test]
         public void SerializeTesting()
         {
-            Network network = new Network(1, 1, 1, new int[] { 1 }, new ActivatorReLU());
+            Network network = new Network(1, 1, 0, new int[] { 1, 1 }, new ActivatorReLU());
             Network networkAfterSerialization = NetworkDeserializer.Deserialize(NetworkSerializer.Serialize(network));
             Assert.IsTrue(network.Equals(networkAfterSerialization));
         }
