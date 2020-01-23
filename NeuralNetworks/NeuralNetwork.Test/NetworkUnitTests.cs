@@ -17,9 +17,15 @@ namespace NeuralNetwork.Tests
         [Test]
         public void PropagationTest()
         {
-            Network network = new Network(1, 1, 1, new int[] { 1 }, new ActivatorReLU());
+            Network network = new Network(1, 1, 0, new int[] { 1, 1 }, new ActivatorReLU());
             network.Propagate(Matrix<double>.Build.Random(1, 1));
             Assert.NotZero(network.Output[0, 0]);
+        }
+
+        [Test]
+        public void BackPropagationTest()
+        {
+            //TODO
         }
     }
 }
