@@ -12,9 +12,11 @@ namespace NeuralNetwork.Serialization
 
         public static SerializedNetwork Serialize(INetwork network)
         {
-            SerializedNetwork serializedNetwork = new SerializedNetwork();
-            serializedNetwork.BatchSize = network.BatchSize;
-            ISerializedLayer[] serializedLayers = new ISerializedLayer[network.Layers.Length];
+            SerializedNetwork serializedNetwork = new SerializedNetwork
+            {
+                BatchSize = network.BatchSize
+            };
+            serializedNetwork.SerializedLayers = new ISerializedLayer[network.Layers.Length];
             for(int i = 0; i < network.Layers.Length; i++)
             {
                 StandardLayer layer = network.Layers.GetValue(i) as StandardLayer;
@@ -22,7 +24,7 @@ namespace NeuralNetwork.Serialization
                     layer.Weights.ToArray(),
                     layer.ActivatorType,
                     layer.FixedLearningRate);
-                serializedLayers[i] = serializedLayer;
+                serializedNetwork.SerializedLayers[i] = serializedLayer;
             }
             return serializedNetwork;
         }

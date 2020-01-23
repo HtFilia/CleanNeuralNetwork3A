@@ -7,7 +7,7 @@ using NeuralNetwork.Serialization;
 
 namespace NeuralNetwork.Tests
 {
-    public class SerializeTest
+    public class SerializationUnitTests
     {
         [SetUp]
         public void Setup()
@@ -16,11 +16,11 @@ namespace NeuralNetwork.Tests
         }
 
         [Test]
-        public void SerializeTesting()
+        public void SerializeAndDeserializeTest()
         {
             Network network = new Network(1, 1, 0, new int[] { 1, 1 }, new ActivatorReLU());
-            Network networkAfterSerialization = NetworkDeserializer.Deserialize(NetworkSerializer.Serialize(network));
-            Assert.IsTrue(network.Equals(networkAfterSerialization));
+            Network deserializedNetwork = NetworkDeserializer.Deserialize(NetworkSerializer.Serialize(network));
+            Assert.IsTrue(network.Equals(deserializedNetwork));
         }
     }
 }

@@ -102,5 +102,18 @@ namespace NeuralNetwork
             // Final layer's activation is network's output
             _output = _layers[Layers.Length - 1].Activation;
         }
+
+        public override string ToString()
+        {
+            string res = "";
+            int count = 0;
+            foreach (ILayer layer in _layers)
+            {
+                StandardLayer standardLayer = layer as StandardLayer;
+                res += String.Format("[Layer #{0}] Weights : ", count);
+                res += standardLayer.Weights.ToMatrixString();
+            }
+            return res;
+        }
     }
 }

@@ -23,7 +23,7 @@ namespace NeuralNetwork.Serialization
             // Input size is previous layer's size
             int inputSize = inputLayer.Weights.GetLength(1);
             // Hidden layers are every layer except input layer
-            int nbHiddenLayers = serializedNetwork.SerializedLayers.Length - 1;
+            int nbHiddenLayers = serializedNetwork.SerializedLayers.Length - 2;
             // This activator will be applied first because of constructor specs. Will be changed if necessary when creating layers
             IActivator activator = GetCorrectActivator(inputLayer.ActivatorType);
             // Create Network with correct dimensions

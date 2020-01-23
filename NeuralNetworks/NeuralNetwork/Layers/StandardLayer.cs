@@ -247,6 +247,10 @@ namespace NeuralNetwork.Layers
             {
                 return false;
             }
+            if (!_activator.Type.Equals(otherStandardLayer.ActivatorType))
+            {
+                return false;
+            }
             return true;
         }
     }
