@@ -21,7 +21,7 @@ namespace NeuralNetwork.Serialization
                 ISerializedLayer serializedLayer = new SerializedStandardLayer(layer.Bias.Column(0).ToArray(),
                     layer.Weights.ToArray(),
                     layer.ActivatorType,
-                    layer.GradientAdjustmentParamter);
+                    layer.FixedLearningRate);
                 serializedLayers[i] = serializedLayer;
             }
             return serializedNetwork;
