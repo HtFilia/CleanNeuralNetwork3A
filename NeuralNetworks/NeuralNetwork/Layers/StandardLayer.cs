@@ -137,7 +137,7 @@ namespace NeuralNetwork.Layers
             Matrix<double> zetaDeriv = Matrix<double>.Build.Dense(_batchSize, _layerSize);
             for (int i = 0; i < _batchSize; i++)
             {
-                for(int j = 0; j < _layerSize; j++)
+                for (int j = 0; j < _layerSize; j++)
                 {
                     zetaDeriv[i, j] = _activator.ApplyDerivative(_zeta[i, j]);
                 }
@@ -190,6 +190,12 @@ namespace NeuralNetwork.Layers
         /// The weighted error.
         /// </value>
         public Matrix<double> WeightedError { get; }
+
+        public ActivatorType ActivatorType {
+            get {
+                return _activator.Type;
+            }
+        }
 
         public bool Equals(ILayer other)
         {
