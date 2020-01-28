@@ -153,7 +153,7 @@ namespace NeuralNetwork.Layers
         /// <param name="upstreamWeightedErrors">The upstream weighted errors.</param>
         public void BackPropagate(Matrix<double> upstreamWeightedErrors)
         {
-            Matrix<double> zetaDeriv = Matrix<double>.Build.Dense(_batchSize, _layerSize);
+            Matrix<double> zetaDeriv = Matrix<double>.Build.Dense(_layerSize, _batchSize);
             for (int i = 0; i < _batchSize; i++)
             {
                 for (int j = 0; j < _layerSize; j++)
