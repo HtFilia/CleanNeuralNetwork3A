@@ -4,6 +4,7 @@ using NeuralNetwork.Layers;
 using MathNet.Numerics.LinearAlgebra;
 using NUnit.Framework;
 using NeuralNetwork.Serialization;
+using NeuralNetwork.Common.Serialization;
 
 namespace NeuralNetwork.Tests
 {
@@ -18,8 +19,12 @@ namespace NeuralNetwork.Tests
         [Test]
         public void SerializeAndDeserializeTest()
         {
-            Network network = new Network(1, 1, 0, new int[] { 1, 1 }, new ActivatorReLU());
-            Network deserializedNetwork = NetworkDeserializer.Deserialize(NetworkSerializer.Serialize(network));
+            int batchSize = 1;
+            StandardLayer inputLayer = new StandardLayer(2, 2, batchSize, new ActivatorLeakyReLU());
+            StandardLayer outputLayer = new StandardLayer(1, 2, batchSize, new ActivatorIdentity());
+            Network network = new Network(batchSize, new Common.Layers.ILayer[] { inputLayer, outputLayer });
+            SerializedNetwork serializedNetwork = NetworkSerializer.Serialize(network);
+            Network deserializedNetwork = NetworkDeserializer.Deserialize(serializedNetwork);
             Assert.IsTrue(network.Equals(deserializedNetwork));
         }
     }

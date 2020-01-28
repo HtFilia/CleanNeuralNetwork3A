@@ -27,7 +27,7 @@ namespace NeuralNetwork.Layers
             _inputSize = inputSize;
             _batchSize = batchSize;
 
-            _weights = Matrix<double>.Build.Random(_layerSize, _inputSize);
+            _weights = Matrix<double>.Build.Random(_inputSize, _layerSize);
             _bias = Matrix<double>.Build.Random(_layerSize, 1);
             _output = Matrix<double>.Build.Dense(_layerSize, _batchSize);
             _zeta = Matrix<double>.Build.Dense(_layerSize, _batchSize);

@@ -19,7 +19,8 @@ namespace NeuralNetwork.Tests
         [Test]
         public void PropagationTest()
         {
-            Network network = new Network(1, 1, 0, new int[] { 1, 1 }, new ActivatorReLU());
+            StandardLayer outputLayer = new StandardLayer(1, 1, 1, new ActivatorIdentity());
+            Network network = new Network(1, new Common.Layers.ILayer[] { outputLayer });
             network.Propagate(Matrix<double>.Build.Random(1, 1));
             Assert.NotZero(network.Output[0, 0]);
         }

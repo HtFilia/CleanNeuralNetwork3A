@@ -27,29 +27,22 @@ namespace NeuralNetwork
         public Mode Mode { get => _mode; set => _mode = value; }
 
         // Constructor
-        public Network(int batchSize, int inputSize, int nbHiddenLayers, int[] nbNeuronsPerLayer, IActivator activator)
+        public Network(int batchSize, ILayer[] layers)
         {
-            // Argument Exception
-            if (nbNeuronsPerLayer.Length != nbHiddenLayers + 2)
+            // Exception handling
+            if (layers == null || layers.Length == 0)
             {
-                throw new Exception("There should be a set number of neurons per layer " +
-                    "for each layer.");
+                throw new ArgumentException("You need layers to create a neural network.");
+            }
+            if (batchSize == 0)
+            {
+                throw new ArgumentException("You need a positive integer for batchSize.");
             }
             // Parameters
             this._batchSize = batchSize;
-            this._output = Matrix<double>.Build.Dense(batchSize, nbNeuronsPerLayer[nbNeuronsPerLayer.Length - 1]);
-            this._layers = new ILayer[nbHiddenLayers + 2];
-            // First layer is connected to user's input
-            this._layers[0] = new StandardLayer(nbNeuronsPerLayer[0], inputSize, batchSize, activator);
-            // Next hidden layers have an input size of previous layer's size
-            for (int layer = 1; layer <= nbHiddenLayers; layer++)
-            {
-                this._layers[layer] = new StandardLayer(nbNeuronsPerLayer[layer], nbNeuronsPerLayer[layer - 1], batchSize, activator);
-            }
-            // Output layer has an identity activator
-            this._layers[nbHiddenLayers + 1] = new StandardLayer(nbNeuronsPerLayer[nbNeuronsPerLayer.Length - 1],
-                                                                 nbNeuronsPerLayer[nbNeuronsPerLayer.Length - 2],
-                                                                 batchSize, new Activators.ActivatorIdentity());
+            this._output = layers.Last().Activation;
+            this._layers = layers;
+
             // We have to train a network first after creating it
             this._mode = Mode.Training;
         }
