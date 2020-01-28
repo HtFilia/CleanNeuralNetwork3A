@@ -5,6 +5,8 @@ using MathNet.Numerics.LinearAlgebra;
 using NUnit.Framework;
 using NeuralNetwork.Serialization;
 using NeuralNetwork.Common.Serialization;
+using NeuralNetwork.Common.GradientAdjustmentsParameters;
+using NeuralNetwork.Common.GradientAdjustmentParameters;
 
 namespace NeuralNetwork.Tests
 {
@@ -20,8 +22,8 @@ namespace NeuralNetwork.Tests
         public void SerializeAndDeserializeTest()
         {
             int batchSize = 1;
-            StandardLayer inputLayer = new StandardLayer(2, 2, batchSize, new ActivatorLeakyReLU());
-            StandardLayer outputLayer = new StandardLayer(1, 2, batchSize, new ActivatorIdentity());
+            StandardLayer inputLayer = new StandardLayer(2, 2, batchSize, new FixedLearningRateParameters(0.1), new ActivatorLeakyReLU());
+            StandardLayer outputLayer = new StandardLayer(1, 2, batchSize, new FixedLearningRateParameters(0.1), new ActivatorIdentity()); ;
             Network network = new Network(batchSize, new Common.Layers.ILayer[] { inputLayer, outputLayer });
             SerializedNetwork serializedNetwork = NetworkSerializer.Serialize(network);
             Network deserializedNetwork = NetworkDeserializer.Deserialize(serializedNetwork);

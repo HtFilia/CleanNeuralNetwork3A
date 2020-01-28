@@ -7,6 +7,8 @@ using NeuralNetwork.Serialization;
 using NeuralNetwork.Common.Activators;
 using NeuralNetwork.Common.Layers;
 using NeuralNetwork.Common.Serialization;
+using NeuralNetwork.Common.GradientAdjustmentParameters;
+using NeuralNetwork.Common.GradientAdjustmentsParameters;
 
 namespace NeuralNetwork.Utils
 {
@@ -72,12 +74,14 @@ namespace NeuralNetwork.Utils
         {
             // Cast to correct type
             SerializedStandardLayer serializedStandardLayer = serializedLayer as SerializedStandardLayer;
+            // Recover correct gradient adjustments parameters
+            IGradientAdjustmentParameters gradientAdjustmentParameters = GetCorrectGradientAdjustmentParameters(serializedStandardLayer.GradientAdjustmentParameters);
             // Recover correct dimensions
             int inputSize = serializedStandardLayer.Weights.GetLength(0);
             int layerSize = serializedStandardLayer.Weights.GetLength(1);
             IActivator activator = GetCorrectActivator(serializedStandardLayer.ActivatorType);
-            StandardLayer deserializedStandardLayer = new StandardLayer(layerSize, inputSize, batchSize, activator);
-            // Fill correct values for weights and biases
+            StandardLayer deserializedStandardLayer = new StandardLayer(layerSize, inputSize, batchSize, gradientAdjustmentParameters, activator);
+            // Fill correct values for weights, biases and parameters
             for (int j = 0; j < layerSize; j++)
             {
                 deserializedStandardLayer.Bias[j, 0] = serializedStandardLayer.Bias[j];
@@ -88,6 +92,27 @@ namespace NeuralNetwork.Utils
             }
             // All done
             return deserializedStandardLayer;
+        }
+
+        private static IGradientAdjustmentParameters GetCorrectGradientAdjustmentParameters(IGradientAdjustmentParameters gradientAdjustmentParameters)
+        {
+            switch (gradientAdjustmentParameters.Type)
+            {
+                case GradientAdjustmentType.FixedLearningRate:
+                    {
+                        return gradientAdjustmentParameters as FixedLearningRateParameters;
+
+                    }
+                case GradientAdjustmentType.Adam:
+                    {
+                        return gradientAdjustmentParameters as AdamParameters;
+                    }
+                case GradientAdjustmentType.Momentum:
+                    {
+                        return gradientAdjustmentParameters as MomentumParameters;
+                    }
+                default: throw new ArgumentException("Wrong Gradient Adjustment Parameters Type");
+            }
         }
     }
 

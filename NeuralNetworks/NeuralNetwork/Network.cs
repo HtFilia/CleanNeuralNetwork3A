@@ -68,10 +68,6 @@ namespace NeuralNetwork
 
         public void Learn(Matrix<double> outputLayerError)
         {
-            // First back-propagation through argument outputLayerError
-            // TODO
-            // We back-propagate to the previous layers.
-            // TODO
             var weightedError = outputLayerError;
             for (int i = Layers.Length - 1; i > -1; i--)
             {

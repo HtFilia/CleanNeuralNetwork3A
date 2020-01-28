@@ -2,7 +2,7 @@ using NUnit.Framework;
 using NeuralNetwork.Activators;
 
 
-namespace NeuralNetwork.Test
+namespace NeuralNetwork.Tests
 {
     public class ActivatorUnitTests
     {

@@ -3,6 +3,8 @@ using NeuralNetwork.Activators;
 using NeuralNetwork.Layers;
 using MathNet.Numerics.LinearAlgebra;
 using NUnit.Framework;
+using NeuralNetwork.Common.GradientAdjustmentsParameters;
+using NeuralNetwork.Common.GradientAdjustmentParameters;
 
 namespace NeuralNetwork.Tests
 {
@@ -18,7 +20,7 @@ namespace NeuralNetwork.Tests
         public void PropagationTest()
         {
             // We create a basic layer containing 1 neuron and 1 random input
-            StandardLayer testLayer = new StandardLayer(1, 1, 1, new ActivatorIdentity());
+            StandardLayer testLayer = new StandardLayer(1, 1, 1, new FixedLearningRateParameters(0.1), new ActivatorIdentity());
             Matrix<double> testInput = Matrix<double>.Build.Random(1, 1);
 
             // We propagate the input to this new layer

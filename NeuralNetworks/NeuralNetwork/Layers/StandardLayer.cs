@@ -17,11 +17,16 @@ namespace NeuralNetwork.Layers
         private Matrix<double> _bias;
         private Matrix<double> _zeta;
         private Matrix<double> _output;
+        private Matrix<double> _errors;
         Matrix<double> _weightedError;
         private IActivator _activator;
-        private FixedLearningRateParameters _fixedLearningRate;
+        private IGradientAdjustmentParameters _gradientAdjustmentParameters;
 
-        public StandardLayer(int layerSize, int inputSize, int batchSize, IActivator activator)
+        public StandardLayer(int layerSize, 
+                             int inputSize, 
+                             int batchSize, 
+                             IGradientAdjustmentParameters gradientAdjustmentParameters, 
+                             IActivator activator)
         {
             _layerSize = layerSize;
             _inputSize = inputSize;
@@ -31,11 +36,11 @@ namespace NeuralNetwork.Layers
             _bias = Matrix<double>.Build.Random(_layerSize, 1);
             _output = Matrix<double>.Build.Dense(_layerSize, _batchSize);
             _zeta = Matrix<double>.Build.Dense(_layerSize, _batchSize);
-            _weightedError = Matrix<double>.Build.Dense(_layerSize, _batchSize);
+            _weightedError = Matrix<double>.Build.Dense(_inputSize, _batchSize);
             _input = Matrix<double>.Build.Dense(_inputSize, _batchSize);
-            _fixedLearningRate = new FixedLearningRateParameters(0.2);
-
-                _activator = activator;
+            _errors = Matrix<double>.Build.Dense(_layerSize, _batchSize);
+            _gradientAdjustmentParameters = gradientAdjustmentParameters;
+            _activator = activator;
         }
 
         internal StandardLayer(int layerSize, int inputSize, int batchSize, IActivator activator, Matrix<double> weights, Matrix<double> bias)
@@ -101,11 +106,11 @@ namespace NeuralNetwork.Layers
         /// <value>
         /// The gradient adjustment.
         /// </value>
-        public IGradientAdjustmentParameters FixedLearningRate
+        public IGradientAdjustmentParameters GradientAdjustmentParameters
         {
             get
             {
-                return _fixedLearningRate;
+                return _gradientAdjustmentParameters;
             }
         }
 
@@ -161,7 +166,8 @@ namespace NeuralNetwork.Layers
                     zetaDeriv[j, i] = _activator.ApplyDerivative(_zeta[j, i]);
                 }
             }
-            upstreamWeightedErrors.PointwiseMultiply(zetaDeriv, _weightedError);
+            upstreamWeightedErrors.PointwiseMultiply(zetaDeriv, _errors);
+            _weightedError = Weights.Multiply(_errors);
         }
 
         /// <summary>Creation
@@ -169,12 +175,28 @@ namespace NeuralNetwork.Layers
         /// </summary>
         public void UpdateParameters()
         {
-            var gradientWeights = (_input.Multiply(_weightedError.Transpose()));
-            var gradientBiais = _weightedError.Multiply(Matrix<double>.Build.Dense(_batchSize, 1, 1));
-
-
-            _weights = _weights - gradientWeights.Multiply(_fixedLearningRate.LearningRate / BatchSize) ;
-            _bias = _bias - gradientWeights.Multiply(_fixedLearningRate.LearningRate / BatchSize); ;
+            var gradientWeights = (_input.Multiply(_errors.Transpose()));
+            var gradientBiais = _errors.Multiply(Matrix<double>.Build.Dense(_batchSize, 1, 1));
+            switch(_gradientAdjustmentParameters.Type)
+            {
+                case GradientAdjustmentType.FixedLearningRate:
+                    {
+                        FixedLearningRateParameters fixedLearningRateParameters = _gradientAdjustmentParameters as FixedLearningRateParameters;
+                        _weights -= gradientWeights.Multiply(fixedLearningRateParameters.LearningRate / BatchSize);
+                        _bias -= gradientBiais.Multiply(fixedLearningRateParameters.LearningRate / BatchSize);
+                        return;
+                    }
+                case GradientAdjustmentType.Adam:
+                    {
+                        throw new NotImplementedException();
+                    }
+                case GradientAdjustmentType.Momentum:
+                    {
+                        throw new NotImplementedException();
+                    }
+                default: throw new ArgumentException("Gradient Adjusment Type should be valid.");
+            }
+            
         }
 
         /// <summary>
@@ -213,10 +235,16 @@ namespace NeuralNetwork.Layers
         /// <value>
         /// The weighted error.
         /// </value>
-        public Matrix<double> WeightedError { get; }
+        public Matrix<double> WeightedError {
+            get 
+            {
+                return this._weightedError;
+            }
+        }
 
         public ActivatorType ActivatorType {
-            get {
+            get 
+            {
                 return _activator.Type;
             }
         }
