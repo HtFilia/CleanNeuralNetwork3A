@@ -3,6 +3,8 @@ using NeuralNetwork.Activators;
 using NeuralNetwork.Layers;
 using MathNet.Numerics.LinearAlgebra;
 using NUnit.Framework;
+using Newtonsoft.Json;
+using NeuralNetwork.Common.Layers;
 
 namespace NeuralNetwork.Tests
 {
@@ -26,6 +28,15 @@ namespace NeuralNetwork.Tests
         public void BackPropagationTest()
         {
             //TODO
+        }
+
+        public void updateParamsTest()
+        {
+            Network network = new Network(1, 1, 0, new int[] { 1, 1 }, new ActivatorReLU());
+            ILayer[] InitialLayers = network.Layers;
+            network.Propagate(Matrix<double>.Build.Random(1, 1));
+            network.Learn(network.Output);
+            Assert.IsFalse(InitialLayers.Equals(network.Layers));
         }
     }
 }

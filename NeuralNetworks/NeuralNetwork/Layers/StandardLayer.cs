@@ -169,9 +169,10 @@ namespace NeuralNetwork.Layers
         /// </summary>
         public void UpdateParameters()
         {
-            var gradientWeights = (_input * _weightedError.Transpose());
-            var gradientBiais = _weightedError * Matrix<double>.Build.Dense(_batchSize, 1, 1);
-      
+            var gradientWeights = (_input.Multiply(_weightedError.Transpose()));
+            var gradientBiais = _weightedError.Multiply(Matrix<double>.Build.Dense(_batchSize, 1, 1));
+
+
             _weights = _weights - gradientWeights.Multiply(_fixedLearningRate.LearningRate / BatchSize) ;
             _bias = _bias - gradientWeights.Multiply(_fixedLearningRate.LearningRate / BatchSize); ;
         }
