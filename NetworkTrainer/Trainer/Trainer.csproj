@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +12,18 @@
 
   <ItemGroup>
     <PackageReference Include="MathNet.Numerics" Version="4.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="DataProviders">
+      <HintPath>..\..\NeuralNetworks\DataProviders\bin\x64\Debug\netstandard2.0\DataProviders.dll</HintPath>
+    </Reference>
+    <Reference Include="NeuralNetwork">
+      <HintPath>..\..\NeuralNetworks\NeuralNetwork\bin\x64\Debug\netstandard2.0\NeuralNetwork.dll</HintPath>
+    </Reference>
+    <Reference Include="NeuralNetwork.Common">
+      <HintPath>..\..\NeuralNetworks\NeuralNetwork\bin\x64\Debug\netstandard2.0\NeuralNetwork.Common.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

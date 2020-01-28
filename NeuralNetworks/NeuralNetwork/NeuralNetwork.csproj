@@ -13,7 +13,6 @@
     <Compile Remove="NetworkBuilders\**" />
     <Compile Remove="NetworkHandlers\**" />
     <Compile Remove="Storage\**" />
-    <Compile Remove="Utils\**" />
     <EmbeddedResource Remove="DataShuffler\**" />
     <EmbeddedResource Remove="EvaluationFunctions\**" />
     <EmbeddedResource Remove="GradientAdjustments\**" />
@@ -22,7 +21,6 @@
     <EmbeddedResource Remove="NetworkHandlers\**" />
     <EmbeddedResource Remove="Serialization\**" />
     <EmbeddedResource Remove="Storage\**" />
-    <EmbeddedResource Remove="Utils\**" />
     <None Remove="DataShuffler\**" />
     <None Remove="EvaluationFunctions\**" />
     <None Remove="GradientAdjustments\**" />
@@ -31,7 +29,6 @@
     <None Remove="NetworkHandlers\**" />
     <None Remove="Serialization\**" />
     <None Remove="Storage\**" />
-    <None Remove="Utils\**" />
   </ItemGroup>
 
   <ItemGroup>

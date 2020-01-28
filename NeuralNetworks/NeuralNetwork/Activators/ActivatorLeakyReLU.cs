@@ -5,13 +5,13 @@ using NeuralNetwork.Common.Activators;
 
 namespace NeuralNetwork.Activators
 {
-    public sealed class ActivatorSigmoid : IActivator
+    public sealed class ActivatorLeakyReLU : IActivator
     {
         public ActivatorType activatorType;
 
-        public ActivatorSigmoid()
+        public ActivatorLeakyReLU()
         {
-            activatorType = Common.Activators.ActivatorType.Sigmoid;
+            activatorType = Common.Activators.ActivatorType.LeakyReLU;
         }
 
         public ActivatorType Type
@@ -27,8 +27,8 @@ namespace NeuralNetwork.Activators
         {
             get
             {
-                Func<double, double> sigmoid = x => 1 / (1 + Math.Exp(-x));
-                return sigmoid;
+                Func<double, double> reLU = x => (x > 0) ? x : 0.01 * x;
+                return reLU;
             }
         }
 
@@ -36,8 +36,8 @@ namespace NeuralNetwork.Activators
         {
             get
             {
-                Func<double, double> sigmoid = x => (1 / (1 + Math.Exp(-x))) * (1 - 1 / (1 + Math.Exp(-x)));
-                return sigmoid;
+                Func<double, double> reLU = x => (x > 0) ? 1 : 0.01;
+                return reLU;
             }
         }
     }
