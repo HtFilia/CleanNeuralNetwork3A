@@ -89,7 +89,7 @@ namespace NeuralNetwork.Layers
 
             _weights = weights;
             _bias = bias;
-            _output = Matrix<double>.Build.Dense(_batchSize, _layerSize);
+            _output = Matrix<double>.Build.Dense(_layerSize, _batchSize);
 
             _activator = activator;
         }
@@ -163,6 +163,7 @@ namespace NeuralNetwork.Layers
         /// <param name="input">The input.</param>
         public void Propagate(Matrix<double> input)
         {
+            _input = input;
             for (int i = 0; i < _batchSize; i++)
             {
                 _zeta.SetColumn(i, (_weights.Transpose().Multiply(input.Column(i))).Add(_bias.Column(0)));
@@ -210,6 +211,18 @@ namespace NeuralNetwork.Layers
             get
             {
                 return _output;
+            }
+        }
+
+        public Matrix<double> Input
+        {
+            get
+            {
+                return _input;
+            }
+            set
+            {
+                _input = value;
             }
         }
 
