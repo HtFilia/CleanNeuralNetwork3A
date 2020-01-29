@@ -4,6 +4,7 @@ using NeuralNetwork.Common.Activators;
 using NeuralNetwork.Common.Layers;
 using NeuralNetwork.Common.GradientAdjustmentsParameters;
 using System;
+using NeuralNetwork.Optimizers;
 
 namespace NeuralNetwork.Layers
 {
@@ -20,12 +21,12 @@ namespace NeuralNetwork.Layers
         private Matrix<double> _errors;
         Matrix<double> _weightedError;
         private IActivator _activator;
-        private IGradientAdjustmentParameters _gradientAdjustmentParameters;
+        private Optimizer _optimizer;
 
         public StandardLayer(int layerSize, 
                              int inputSize, 
                              int batchSize, 
-                             IGradientAdjustmentParameters gradientAdjustmentParameters, 
+                             IGradientAdjustmentParameters gradientAdjustmentParameters,
                              IActivator activator)
         {
             _layerSize = layerSize;
@@ -39,8 +40,29 @@ namespace NeuralNetwork.Layers
             _weightedError = Matrix<double>.Build.Dense(_inputSize, _batchSize);
             _input = Matrix<double>.Build.Dense(_inputSize, _batchSize);
             _errors = Matrix<double>.Build.Dense(_layerSize, _batchSize);
-            _gradientAdjustmentParameters = gradientAdjustmentParameters;
             _activator = activator;
+
+            switch(gradientAdjustmentParameters.Type)
+            {
+                case GradientAdjustmentType.FixedLearningRate:
+                    {
+                        FixedLearningRateParameters parameters = gradientAdjustmentParameters as FixedLearningRateParameters;
+                        _optimizer = new FixedLearningRateOptimizer(parameters);
+                        break;
+                    }
+                case GradientAdjustmentType.Adam:
+                    {
+                        AdamParameters parameters = gradientAdjustmentParameters as AdamParameters;
+                        _optimizer = new AdamOptimizer(parameters.StepSize,
+                            _layerSize,
+                            _inputSize,
+                            parameters.FirstMomentDecay,
+                            parameters.SecondMomentDecay,
+                            parameters.DenominatorFactor);
+                        break;
+                    }
+                default: throw new ArgumentException("Gradient Adjusment Type should be valid.");
+            }
         }
 
         internal StandardLayer(int layerSize, int inputSize, int batchSize, IActivator activator, Matrix<double> weights, Matrix<double> bias)
@@ -110,7 +132,7 @@ namespace NeuralNetwork.Layers
         {
             get
             {
-                return _gradientAdjustmentParameters;
+                return _optimizer.GetGradient();
             }
         }
 
@@ -141,7 +163,6 @@ namespace NeuralNetwork.Layers
         /// <param name="input">The input.</param>
         public void Propagate(Matrix<double> input)
         {
-            _inputSize = input.ColumnCount;
             for (int i = 0; i < _batchSize; i++)
             {
                 _zeta.SetColumn(i, (_weights.Transpose().Multiply(input.Column(i))).Add(_bias.Column(0)));
@@ -175,28 +196,7 @@ namespace NeuralNetwork.Layers
         /// </summary>
         public void UpdateParameters()
         {
-            var gradientWeights = (_input.Multiply(_errors.Transpose()));
-            var gradientBiais = _errors.Multiply(Matrix<double>.Build.Dense(_batchSize, 1, 1));
-            switch(_gradientAdjustmentParameters.Type)
-            {
-                case GradientAdjustmentType.FixedLearningRate:
-                    {
-                        FixedLearningRateParameters fixedLearningRateParameters = _gradientAdjustmentParameters as FixedLearningRateParameters;
-                        _weights -= gradientWeights.Multiply(fixedLearningRateParameters.LearningRate / BatchSize);
-                        _bias -= gradientBiais.Multiply(fixedLearningRateParameters.LearningRate / BatchSize);
-                        return;
-                    }
-                case GradientAdjustmentType.Adam:
-                    {
-                        throw new NotImplementedException();
-                    }
-                case GradientAdjustmentType.Momentum:
-                    {
-                        throw new NotImplementedException();
-                    }
-                default: throw new ArgumentException("Gradient Adjusment Type should be valid.");
-            }
-            
+            _optimizer.UpdateParams(_errors, _input, ref _weights, ref _bias);
         }
 
         /// <summary>

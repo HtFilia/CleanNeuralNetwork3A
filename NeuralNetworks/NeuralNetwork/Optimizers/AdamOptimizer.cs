@@ -6,26 +6,38 @@ using System.Text;
 
 namespace NeuralNetwork.Optimizers
 {
-    class AdamOptimizer
+    class AdamOptimizer: Optimizer
     {
         AdamParameters _adamParameters;
         Matrix<double> _sWeights;
         Matrix<double> _rWeights;
         Matrix<double> _sBias;
         Matrix<double> _rBias;
-        public AdamOptimizer(double stepSize, int layerSize, int inputSize)
+        double _t;
+        public AdamOptimizer(double stepSize,
+            int layerSize, 
+            int inputSize, 
+            double firstMomentDecay = 0.9, 
+            double secondMomentDecay = 0.0999,
+            double denominatorFactor = 1E-8)
         {
-            _adamParameters = new AdamParameters(stepSize, 0.9, 0.999, Math.Pow(10, -8));
+            _adamParameters = new AdamParameters(stepSize, firstMomentDecay, secondMomentDecay, denominatorFactor);
             _sWeights = Matrix<double>.Build.Dense(layerSize, inputSize);
             _rWeights = Matrix<double>.Build.Dense(layerSize, inputSize);
             _sBias = Matrix<double>.Build.Dense(layerSize, 1);
             _rBias = Matrix<double>.Build.Dense(layerSize, 1);
+            _t = 1;
         }
 
-         public void updateParams(Matrix<double> weightedErrors, Matrix<double> inputs, Matrix<double> weights, Matrix<double> bias)
+        public IGradientAdjustmentParameters GetGradient()
         {
-            var gradientWeights = (inputs.Multiply(weightedErrors.Transpose()));
-            var gradientBias = weightedErrors.Multiply(Matrix<double>.Build.Dense(weightedErrors.ColumnCount, 1, 1));
+            return _adamParameters;
+        }
+
+        public void UpdateParams(Matrix<double> errors, Matrix<double> inputs,ref Matrix<double> weights,ref Matrix<double> bias)
+        {
+            var gradientWeights = (inputs.Multiply(errors.Transpose()));
+            var gradientBias = errors.Multiply(Matrix<double>.Build.Dense(errors.ColumnCount, 1, 1));
 
             _sWeights = _sWeights.Multiply(_adamParameters.FirstMomentDecay) + gradientWeights.Multiply(1 - _adamParameters.FirstMomentDecay);
             _rWeights = _rWeights.Multiply(_adamParameters.SecondMomentDecay) + (gradientWeights.PointwiseMultiply(gradientWeights)).Multiply(1 - _adamParameters.SecondMomentDecay);
@@ -33,11 +45,11 @@ namespace NeuralNetwork.Optimizers
             _sBias = _sBias.Multiply(_adamParameters.FirstMomentDecay) + gradientBias.Multiply(1 - _adamParameters.FirstMomentDecay);
             _rBias = _rBias.Multiply(_adamParameters.SecondMomentDecay) + (gradientBias.PointwiseMultiply(gradientBias)).Multiply(1 - _adamParameters.SecondMomentDecay);
 
-            var sPrimeWeights = _sWeights.Divide(1 - _adamParameters.FirstMomentDecay);
-            var rPrimeWeights = _rWeights.Divide(1 - _adamParameters.SecondMomentDecay);
+            var sPrimeWeights = _sWeights.Divide(1 - Math.Pow(_adamParameters.FirstMomentDecay, _t));
+            var rPrimeWeights = _rWeights.Divide(1 - Math.Pow(_adamParameters.SecondMomentDecay, _t));
 
-            var sPrimeBias = _sBias.Divide(1 - _adamParameters.FirstMomentDecay);
-            var rPrimeBias = _rBias.Divide(1 - _adamParameters.SecondMomentDecay);
+            var sPrimeBias = _sBias.Divide(1 - Math.Pow(_adamParameters.FirstMomentDecay, _t));
+            var rPrimeBias = _rBias.Divide(1 - Math.Pow(_adamParameters.SecondMomentDecay, _t));
 
             var vWeights = sPrimeWeights.PointwiseDivide(rPrimeWeights.PointwiseSqrt().Add(_adamParameters.DenominatorFactor)).Multiply(- _adamParameters.StepSize);
 
@@ -45,6 +57,8 @@ namespace NeuralNetwork.Optimizers
 
             weights.Add(vWeights);
             bias.Add(vBias);
+
+            _t += 1;
         }
     }
 }
