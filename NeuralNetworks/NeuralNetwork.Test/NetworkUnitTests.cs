@@ -12,37 +12,41 @@ namespace NeuralNetwork.Tests
 {
     public class NetworkUnitTests
     {
+        Network networkToTest;
+
         [SetUp]
         public void Setup()
-        {
-
+        {   
+            // Create a network with random weights and biases, using fixed learning rate optimizer
+            // 2 layers : input layer (2 neurons, 2 inputs, activator leaky reLU)
+            //            output layer (1 neuron, 2 inputs, activator identity)
+            int batchSize = 1;
+            StandardLayer inputLayer = new StandardLayer(2, 2, batchSize, new FixedLearningRateParameters(0.1), new ActivatorLeakyReLU()); ;
+            StandardLayer outputLayer = new StandardLayer(1, 2, batchSize, new FixedLearningRateParameters(0.1), new ActivatorIdentity()); ;
+            networkToTest = new Network(batchSize, new ILayer[] { inputLayer, outputLayer });
         }
 
         [Test]
         public void PropagationTest()
         {
-            StandardLayer outputLayer = new StandardLayer(1, 1, 1, new FixedLearningRateParameters(0.1), new ActivatorIdentity());
-            Network network = new Network(1, new Common.Layers.ILayer[] { outputLayer });
-            network.Propagate(Matrix<double>.Build.Random(1, 1));
-            Assert.NotZero(network.Output[0, 0]);
+            // We create a random input that we feed to the network and check if network's output is not 0
+            networkToTest.Propagate(Matrix<double>.Build.Random(2, 1));
+            Assert.NotZero(networkToTest.Output[0, 0]);
         }
 
         [Test]
         public void BackPropagationTest()
         {
-            //TODO
+            //TODO: predict error values. Can it be done with random weights/biases/input?
         }
 
         public void updateParamsTest()
         {
-            int batchSize = 1;
-            StandardLayer inputLayer = new StandardLayer(2, 2, batchSize, new FixedLearningRateParameters(0.1), new ActivatorLeakyReLU()); ;
-            StandardLayer outputLayer = new StandardLayer(1, 2, batchSize, new FixedLearningRateParameters(0.1), new ActivatorIdentity()); ;
-            Network network = new Network(batchSize, new Common.Layers.ILayer[] { inputLayer, outputLayer });
-            ILayer[] InitialLayers = network.Layers;
-            network.Propagate(Matrix<double>.Build.Random(1, 1));
-            network.Learn(network.Output);
-            Assert.IsFalse(InitialLayers.Equals(network.Layers));
+            // We create a random input that we feed to the network and check if weights and biases have been updated
+            ILayer[] InitialLayers = networkToTest.Layers;
+            networkToTest.Propagate(Matrix<double>.Build.Random(2, 1));
+            networkToTest.Learn(networkToTest.Output);
+            Assert.IsFalse(InitialLayers.Equals(networkToTest.Layers));
         }
     }
 }

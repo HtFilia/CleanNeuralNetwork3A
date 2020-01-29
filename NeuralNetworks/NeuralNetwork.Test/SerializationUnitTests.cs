@@ -21,6 +21,7 @@ namespace NeuralNetwork.Tests
         [Test]
         public void SerializeAndDeserializeTest()
         {
+            // We create a network, we serialize it then deserialize it. We then check if initial and deserialized networks are equals
             int batchSize = 1;
             StandardLayer inputLayer = new StandardLayer(2, 2, batchSize, new FixedLearningRateParameters(0.1), new ActivatorLeakyReLU());
             StandardLayer outputLayer = new StandardLayer(1, 2, batchSize, new FixedLearningRateParameters(0.1), new ActivatorIdentity()); ;
