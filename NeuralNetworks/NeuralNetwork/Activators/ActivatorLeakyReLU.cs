@@ -27,7 +27,7 @@ namespace NeuralNetwork.Activators
         {
             get
             {
-                Func<double, double> reLU = x => (x > 0) ? x : 0.01 * x;
+                Func<double, double> reLU = x => (x > 0) ? x : 0.03 * x;
                 return reLU;
             }
         }
@@ -36,7 +36,7 @@ namespace NeuralNetwork.Activators
         {
             get
             {
-                Func<double, double> reLU = x => (x > 0) ? 1 : 0.01;
+                Func<double, double> reLU = x => (x > 0) ? 1 : 0.03;
                 return reLU;
             }
         }
