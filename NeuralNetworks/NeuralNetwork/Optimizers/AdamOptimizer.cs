@@ -18,12 +18,12 @@ namespace NeuralNetwork.Optimizers
             int layerSize, 
             int inputSize, 
             double firstMomentDecay = 0.9, 
-            double secondMomentDecay = 0.0999,
+            double secondMomentDecay = 0.999,
             double denominatorFactor = 1E-8)
         {
             _adamParameters = new AdamParameters(stepSize, firstMomentDecay, secondMomentDecay, denominatorFactor);
-            _sWeights = Matrix<double>.Build.Dense(layerSize, inputSize);
-            _rWeights = Matrix<double>.Build.Dense(layerSize, inputSize);
+            _sWeights = Matrix<double>.Build.Dense(inputSize, layerSize);
+            _rWeights = Matrix<double>.Build.Dense(inputSize, layerSize);
             _sBias = Matrix<double>.Build.Dense(layerSize, 1);
             _rBias = Matrix<double>.Build.Dense(layerSize, 1);
             _t = 1;
