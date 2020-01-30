@@ -20,11 +20,11 @@ namespace PricingNetwork
         static void Main()
         {
                 StandardLayer hiddenLayer = new StandardLayer(5,
-                    7, 5, new AdamParameters(0.01, 0.9, 0.999, 1E-8), new ActivatorLeakyReLU());
-                StandardLayer outputLayer = new StandardLayer(1, 5, 7,
+                    7, 1, new AdamParameters(0.01, 0.9, 0.999, 1E-8), new ActivatorLeakyReLU());
+                StandardLayer outputLayer = new StandardLayer(1, 5, 1,
                     new AdamParameters(0.01, 0.9, 0.999, 1E-8), new ActivatorIdentity());
 
-                Network princingNetwork = new Network(7, new ILayer[] { hiddenLayer, outputLayer });
+                Network princingNetwork = new Network(1, new ILayer[] { hiddenLayer, outputLayer });
 
             SerializedNetwork serializedNetwork = NetworkSerializer.Serialize(princingNetwork);
 

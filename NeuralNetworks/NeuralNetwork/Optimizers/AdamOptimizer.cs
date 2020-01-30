@@ -55,8 +55,8 @@ namespace NeuralNetwork.Optimizers
 
             var vBias = sPrimeBias.PointwiseDivide(rPrimeBias.PointwiseSqrt().Add(_adamParameters.DenominatorFactor)).Multiply(-_adamParameters.StepSize);
 
-            weights.Add(vWeights);
-            bias.Add(vBias);
+            weights += vWeights;
+            bias += vBias;
 
             _t += 1;
         }
