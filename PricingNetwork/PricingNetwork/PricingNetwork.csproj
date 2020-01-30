@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MathNet.Numerics" Version="4.9.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="DataProviders">
+      <HintPath>..\..\NeuralNetworks\DataProviders\bin\x64\Debug\netstandard2.0\DataProviders.dll</HintPath>
+    </Reference>
+    <Reference Include="NeuralNetwork">
+      <HintPath>..\..\NeuralNetworks\NeuralNetwork\bin\x64\Debug\netstandard2.0\NeuralNetwork.dll</HintPath>
+    </Reference>
+    <Reference Include="NeuralNetwork.Common">
+      <HintPath>..\..\NeuralNetworks\DataProviders\bin\x64\Debug\netstandard2.0\NeuralNetwork.Common.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
