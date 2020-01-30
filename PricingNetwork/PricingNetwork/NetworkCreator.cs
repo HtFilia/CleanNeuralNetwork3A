@@ -19,23 +19,31 @@ namespace PricingNetwork
     {
         static void Main()
         {
-                StandardLayer hiddenLayer = new StandardLayer(5,
-                    7, 5, new AdamParameters(0.01, 0.9, 0.999, 1E-8), new ActivatorLeakyReLU());
-                StandardLayer outputLayer = new StandardLayer(1, 5, 7,
-                    new AdamParameters(0.01, 0.9, 0.999, 1E-8), new ActivatorIdentity());
+            StandardLayer xorHiddenLayer = new StandardLayer(2, 2, 4,
+                new AdamParameters(0.01, 0.9, 0.999, 1E-8), new ActivatorLeakyReLU());
+            StandardLayer xorOutputLayer = new StandardLayer(1, 2, 4,
+                new AdamParameters(0.01, 0.9, 0.999, 1E-8), new ActivatorIdentity());
+            Network xorNetwork = new Network(4, new ILayer[] { xorHiddenLayer, xorOutputLayer });
 
-                Network princingNetwork = new Network(7, new ILayer[] { hiddenLayer, outputLayer });
+            StandardLayer pricingHiddenLayer = new StandardLayer(5, 7, 1, 
+                new AdamParameters(0.01, 0.9, 0.999, 1E-8), new ActivatorLeakyReLU());
+            StandardLayer pricingOutputLayer = new StandardLayer(1, 5, 1, 
+                new AdamParameters(0.01, 0.9, 0.999, 1E-8), new ActivatorIdentity());
+            Network princingNetwork = new Network(1, new ILayer[] { pricingHiddenLayer, pricingOutputLayer });
 
-            SerializedNetwork serializedNetwork = NetworkSerializer.Serialize(princingNetwork);
+            SerializedNetwork serializedXorNetwork = NetworkSerializer.Serialize(xorNetwork);
+            SerializedNetwork serializedPricingNetwork = NetworkSerializer.Serialize(princingNetwork);
 
             try
             {
-                using(FileStream networkJson = File.Create("./pricingNetwork.json"))
-                {
-                    byte[] jsonText = new UTF8Encoding(true).GetBytes(JsonConvert.SerializeObject(serializedNetwork));
-                    networkJson.Write(jsonText, 0, jsonText.Length);
-                    networkJson.Close();
-                }
+                using FileStream pricingNetworkJson = File.Create("./pricingNetwork.json");
+                byte[] jsonPricingText = new UTF8Encoding(true).GetBytes(JsonConvert.SerializeObject(serializedPricingNetwork));
+                pricingNetworkJson.Write(jsonPricingText, 0, jsonPricingText.Length);
+                pricingNetworkJson.Close();
+                using FileStream xorNetworkJson = File.Create("./xorNetwork.json");
+                byte[] jsonXorText = new UTF8Encoding(true).GetBytes(JsonConvert.SerializeObject(serializedXorNetwork));
+                xorNetworkJson.Write(jsonXorText, 0, jsonXorText.Length);
+                xorNetworkJson.Close();
             } catch (Exception e)
             {
                 throw e;
