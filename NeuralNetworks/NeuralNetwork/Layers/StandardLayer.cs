@@ -1,4 +1,5 @@
 ﻿using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.Distributions;
 using NeuralNetwork.Common;
 using NeuralNetwork.Common.Activators;
 using NeuralNetwork.Common.Layers;
@@ -33,7 +34,9 @@ namespace NeuralNetwork.Layers
             _inputSize = inputSize;
             _batchSize = batchSize;
 
-            _weights = Matrix<double>.Build.Random(_inputSize, _layerSize);
+            double xavierInitializationParameter = Math.Sqrt(6 / layerSize);
+            ContinuousUniform continuousUniform = new ContinuousUniform(-1 * xavierInitializationParameter, xavierInitializationParameter);
+            _weights = Matrix<double>.Build.Random(_inputSize, _layerSize, continuousUniform);
             _bias = Matrix<double>.Build.Dense(_layerSize, 1);
             _output = Matrix<double>.Build.Dense(_layerSize, _batchSize);
             _zeta = Matrix<double>.Build.Dense(_layerSize, _batchSize);
