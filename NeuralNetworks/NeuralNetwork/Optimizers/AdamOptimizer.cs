@@ -36,8 +36,9 @@ namespace NeuralNetwork.Optimizers
 
         public void UpdateParams(Matrix<double> errors, Matrix<double> inputs,ref Matrix<double> weights,ref Matrix<double> bias)
         {
-            var gradientWeights = (inputs.Multiply(errors.Transpose()));
-            var gradientBias = errors.Multiply(Matrix<double>.Build.Dense(errors.ColumnCount, 1, 1));
+            double invBatchSize = 1 / (double)inputs.ColumnCount;
+            var gradientWeights = inputs.Multiply(errors.Transpose()).Multiply(invBatchSize);
+            var gradientBias = errors.Multiply(Matrix<double>.Build.Dense(errors.ColumnCount, 1, 1)).Multiply(invBatchSize);
 
             _sWeights = _sWeights.Multiply(_adamParameters.FirstMomentDecay) + gradientWeights.Multiply(1 - _adamParameters.FirstMomentDecay);
             _rWeights = _rWeights.Multiply(_adamParameters.SecondMomentDecay) + (gradientWeights.PointwiseMultiply(gradientWeights)).Multiply(1 - _adamParameters.SecondMomentDecay);
