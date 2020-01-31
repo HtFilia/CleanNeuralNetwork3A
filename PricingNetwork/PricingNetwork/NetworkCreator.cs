@@ -25,11 +25,13 @@ namespace PricingNetwork
                 new AdamParameters(0.01, 0.9, 0.999, 1E-8), new ActivatorIdentity());
             Network xorNetwork = new Network(4, new ILayer[] { xorHiddenLayer, xorOutputLayer });
 
-            StandardLayer pricingHiddenLayer = new StandardLayer(5, 7, 20, 
-                new AdamParameters(0.007, 0.9, 0.999, 1E-8), new ActivatorLeakyReLU());
-            StandardLayer pricingOutputLayer = new StandardLayer(1, 5, 20, 
-                new AdamParameters(0.007, 0.9, 0.999, 1E-8), new ActivatorIdentity());
-            Network princingNetwork = new Network(20, new ILayer[] { pricingHiddenLayer, pricingOutputLayer });
+            StandardLayer pricingHiddenLayer1 = new StandardLayer(5, 7, 20, 
+                new AdamParameters(0.001, 0.9, 0.999, 1E-8), new ActivatorLeakyReLU());
+            StandardLayer pricingHiddenLayer2 = new StandardLayer(4, 5, 20,
+                new AdamParameters(0.001, 0.9, 0.999, 1E-8), new ActivatorLeakyReLU());
+            StandardLayer pricingOutputLayer = new StandardLayer(1, 4, 20, 
+                new AdamParameters(0.01, 0.9, 0.999, 1E-8), new ActivatorIdentity());
+            Network princingNetwork = new Network(20, new ILayer[] { pricingHiddenLayer1, pricingHiddenLayer2, pricingOutputLayer });
 
             SerializedNetwork serializedXorNetwork = NetworkSerializer.Serialize(xorNetwork);
             SerializedNetwork serializedPricingNetwork = NetworkSerializer.Serialize(princingNetwork);
